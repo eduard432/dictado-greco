@@ -13,7 +13,8 @@ function App() {
 
   useEffect(() => {
     const localStorageIndex = localStorage.getItem("word-index");
-    setIndexWord(parseInt(localStorageIndex || "1"));
+    const localStorageIndexNum = parseInt(localStorageIndex || "1")
+    setIndexWord(localStorageIndexNum < 0 ? 0 : localStorageIndexNum > 559 ? 559 : localStorageIndexNum);
   }, []);
 
   useEffect(() => {
@@ -38,8 +39,11 @@ function App() {
   };
 
   const handleSetIndex = (e: React.FormEvent<HTMLInputElement>) => {
+    speechSynthesis.cancel()
     e.preventDefault();
-    const i = parseInt(e.currentTarget.value) || indexWord;
+    const currentValueNum = parseInt(e.currentTarget.value || `${indexWord}`)
+    console.log(currentValueNum)
+    const i = currentValueNum < 1 ? 1 : currentValueNum >= 561 ? 560 : currentValueNum  || indexWord;
     localStorage.setItem("word-index", `${i - 1}`);
     setIndexWord(i - 1);
   };
@@ -60,6 +64,7 @@ function App() {
   };
 
   const handleVoice = (s: number = 1, title: boolean = false) => {
+    speechSynthesis.cancel()
     setSpeed(s);
     if (title) return voice(`${Data[indexWord][1]}`, 0.2);
     voice(`${Data[indexWord][2]}`, s);
